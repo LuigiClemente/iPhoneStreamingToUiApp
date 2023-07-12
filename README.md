@@ -1,3 +1,36 @@
+# App 1 - Bluetooth Audio Streamer
+
+- Use Web Bluetooth API to receive audio input from Bluetooth device
+
+- Encode audio data and stream it via WebSockets to App 2
+
+# App 2 - Websocket Server & Visualization Frontend
+
+- Implements a websocket server to receive the audio stream from App 1
+
+- Broadcasts the audio stream to connected clients (frontend) 
+
+- Includes frontend code to:
+
+  - Connect to websocket server
+
+  - Receive audio stream
+
+  - Render visualization of audio stream
+
+  - Play back audio stream
+
+In this updated scope:
+
+- App 1 handles receiving Bluetooth audio and streaming to App 2
+
+- App 2 implements the websocket server to receive the stream AND the frontend code to visualize and playback the stream
+
+No separate web UI client needed since App 2 includes both backend websocket server and frontend visualization code.
+
+Let me know if you need me to clarify or expand on any part of this outline! I'm happy to explain further or provide code examples.
+
+
 ```mermaid
 graph TD
     A[Initialize Bluejay] --> B[Discover and Connect]
@@ -35,127 +68,172 @@ graph TD
 
 
 
-# Swift Backend App Documentation
+## App 1 - Bluetooth Audio Streamer
 
-This documentation provides an overview of setting up a Swift backend app on iMac to handle Bluetooth and WebSocket communication. It assumes you have a basic knowledge of Swift and iOS development.
+This app receives Bluetooth audio and streams it to App 2.
 
-## Project Setup
+### 1. Create a new folder for the project
 
-1. Create a new Swift project in Xcode for your backend app.
-2. Install Bluejay and Starscream dependencies using one of the following methods:
-    * CocoaPods: Add the dependencies to your `Podfile` and run `pod install`.
-    * Carthage: Add the dependencies to your `Cartfile` and run `carthage update`.
-    * Accio: Add the dependencies to your `Package.swift` file and run `accio update`.
-    * Rogue: Add the dependencies to your `Package.swift` file and run `rogue update`.
-    * Swift Package Manager: Add the dependencies to your `Package.swift` file and build your project.
-
-## Bluetooth LE Communication
-
-To handle Bluetooth Low Energy (LE) communication, we will use the Bluejay framework.
-
-1. Import the Bluejay framework into your project.
-2. Initialize Bluejay and set up the necessary delegates and callbacks to receive Bluetooth events.
-3. Use Bluejay's API to discover and connect to the Bluetooth peripheral (e.g., iPhone).
-4. Implement handlers for device discovery, connection status changes, and other Bluetooth events.
-5. Establish and maintain the Bluetooth connection with the iPhone.
-
-Example code for connecting to a Bluetooth peripheral using Bluejay:
-
-```swift
-import Bluejay
-
-// Initialize Bluejay
-let bluejay = Bluejay()
-
-// Set up delegates and callbacks
-bluejay.register(connectionObserver: self)
-bluejay.register(scanDiscoveryObserver: self)
-
-// Discover and connect to the Bluetooth peripheral
-bluejay.scan(
-    duration: .seconds(10),
-    serviceIdentifiers: [YourServiceIdentifier],
-    discovery: { [weak self] (discovery, discoveries) in
-        // Handle device discovery
-    },
-    expired: { [weak self] (discoveries) in
-        // Handle scan expiration
-    }
-)
-
-// Implement connection observer delegate methods
-extension YourViewController: ConnectionObserver {
-    func bluetoothAvailable(_ available: Bool) {
-        // Handle Bluetooth availability changes
-    }
-
-    func connected(_ peripheral: Peripheral) {
-        // Handle successful connection
-    }
-
-    func disconnected(_ peripheral: Peripheral) {
-        // Handle disconnection
-    }
-}
+```bash
+mkdir app1
+cd app1
 ```
 
-Ensure you handle errors and connection interruptions for reliable Bluetooth communication.
+### 2. Initialize a Node.js project
 
-## Audio Call Streaming
-
-To capture audio data from the iPhone's microphone and transmit it to the iMac backend, we will use the AVFoundation framework.
-
-1. Import the AVFoundation framework into your project.
-2. Use AVFoundation to capture audio data from the iPhone's microphone.
-3. Encode the captured audio data into a suitable format for transmission.
-4. Send the encoded audio data to the iMac backend through the established Bluetooth connection.
-5. Implement decoding mechanisms on the iMac to receive and process audio data from the iPhone.
-
-Ensure you handle errors and interruptions to ensure a smooth audio streaming experience.
-
-## WebSocket Communication
-
-To enable WebSocket communication with web UI clients, we will use the Starscream framework.
-
-1. Import the Starscream framework into your project.
-2. Set up a WebSocket server within your Swift backend app using Starscream.
-3. Initialize a WebSocket server and configure it to listen on a specific port.
-4. Accept incoming WebSocket connections and handle WebSocket events using Starscream's delegate methods.
-5. Convert the received audio data from the Bluetooth connection into the appropriate format for WebSocket transmission.
-6. Send the converted audio data to connected web UI clients via WebSocket.
-
-Example code for setting up a WebSocket server using Starscream:
-
-```swift
-import Starscream
-
-// Initialize WebSocket server
-let server = WebSocketServer()
-
-// Configure server settings
-server.host = "localhost"
-server.port = 8080
-
-// Set up WebSocket delegate
-server.onEvent = { event in
-    switch event {
-    case .text(let text):
-        // Handle received text data
-    case .binary(let data):
-        // Handle received binary data
-    case .connected(let socket):
-        // Handle new WebSocket connection
-    case .disconnected(let socket, let code, let reason, let clean):
-        // Handle WebSocket disconnection
-    case .error(let error):
-        // Handle WebSocket error
-    default:
-        break
-    }
-}
-
-// Start the WebSocket server
-server.start()
+```csharp
+npm init -y
 ```
 
-Ensure you handle WebSocket events, such as new connections, disconnections, and data reception, based on your application's requirements.
+### 3. Install required packages
+
+```
+npm install web-bluetooth websocket
+```
+
+### 4. Create a file called `bluetooth-stream.js`
+
+This file will handle Bluetooth audio streaming.
+
+```javascript
+// Import modules
+const webBluetooth = require('web-bluetooth');
+const WebSocket = require('websocket').w3cwebsocket;
+
+// WebSockets connection to App 2
+const socket = new WebSocket('ws://app2.com:port');
+
+// Connect to Bluetooth device
+const device = await webBluetooth.requestDevice({
+  // Filter on devices
+});
+
+// Connect to GATT server
+const server = await device.gatt.connect();
+
+// Get microphone service
+const service = await server.getPrimaryService('microphone');
+
+// Get microphone characteristic
+const characteristic = await service.getCharacteristic('microphone');
+
+// Start notifications
+characteristic.startNotifications();
+
+// Listen for microphone data
+characteristic.addEventListener('characteristicvaluechanged', async (event) => {
+
+  // Audio data is in event.target.value
+
+  // Preprocess data if needed...
+
+  // Send audio data to App 2
+  socket.send(data);
+
+});
+```
+
+This code sets up the necessary connections and handles streaming audio data to App 2 using WebSockets.
+
+## App 2 - Websocket Server & Visualization Frontend
+
+This app includes the websocket server and the frontend for visualizing the audio.
+
+### 1. Create a folder
+
+```bash
+mkdir app2
+cd app2
+```
+
+### 2. Initialize Node.js project
+
+```csharp
+npm init -y
+```
+
+### 3. Install packages
+
+```
+npm install websocket express
+```
+
+### 4. Create `server.js` for the websocket server
+
+```javascript
+const WebSocket = require('websocket').server;
+
+const server = new WebSocket({
+  httpServer: require('./app').listen(3000)
+});
+
+// Listen for connection
+server.on('connection', socket => {
+
+  // Listen for audio data
+  socket.on('message', data => {
+
+    // Broadcast data to all clients
+    server.clients.forEach(client => {
+      client.send(data);
+    });
+
+  });
+
+});
+```
+
+This code sets up the websocket server, listens for audio data, and broadcasts it to all connected clients.
+
+### 5. Create `app.js` for the Express frontend
+
+```javascript
+const express = require('express');
+
+const app = express();
+
+// Serve static files for frontend
+app.use(express.static('public'));
+
+module.exports = app;
+```
+
+This code sets up an Express server and serves the static files required for the frontend.
+
+### 6. Create `public/script.js` and `public/index.html` for the frontend visualization
+
+Create a file `public/index.html` with the following content:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Audio Visualization</title>
+  <script src="script.js"></script>
+</head>
+<body>
+  <canvas id="visualization"></canvas>
+  <audio id="audio" controls></audio>
+</body>
+</html>
+```
+
+Create a file `public/script.js` with the following content:
+
+```javascript
+const visualizationCanvas = document.getElementById('visualization');
+const audioElement = document.getElementById('audio');
+
+// Connect to the websocket server
+const socket = new WebSocket('ws://app2.com:port');
+
+// Listen for audio stream
+socket.onmessage = event => {
+  const audioData = event.data;
+
+  // Render visualization using Web Audio API and visualizationCanvas
+  // Play back audio using audioElement
+};
+```
+
+In `public/script.js`, you can use the Web Audio API and the canvas element (`visualizationCanvas`) to render the audio visualization. You can also use the `audioElement` to play back the audio.
