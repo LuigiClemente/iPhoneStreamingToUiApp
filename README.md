@@ -15,24 +15,26 @@ sequenceDiagram
 ```
 
 ```mermaid
-graph TD
-    A[Initialize] --> B[Discover and Connect]
-    B --> C[Handle Bluetooth Events]
-    C --> D[Establish Bluetooth Connection]
-    D --> E[Capture Audio Data]
-    E --> F[Encode Audio Data]
-    F --> G[Send Audio Data via Bluetooth]
-    G --> H[Receive Audio Data]
-    H --> I[Decode Audio Data]
-    I --> J[Convert Audio Data for WebSocket]
-    J --> K[Send Audio Data via WebSocket]
-    C --> L{WebSocket Connection?}
+graph TB
+    A[Initialize] -->|1. Discover and Connect| B[Handle Bluetooth Events]
+    B -->|2. Establish Bluetooth Connection| C[Capture Audio Data]
+    C -->|3. Capture Audio Data| D[Encode Audio Data]
+    D -->|4. Encode Audio Data| E[Send Audio Data via Bluetooth]
+    E -->|5. Receive Audio Data| F[Decode Audio Data]
+    F -->|6. Decode Audio Data| G[Convert Audio Data for WebSocket]
+    G -->|7. Convert Audio Data| H[Send Audio Data via WebSocket]
+    H -->|8. Send Audio Data via WebSocket| H
+    H -->|9. User Interactions and UI Updates| I[Handle User Interactions]
+    I -->|10. User Input and UI Updates| J[Convert User Input for WebSocket]
+    J -->|11. Convert User Input| K[Send User Input via WebSocket]
+    K -->|12. Send User Input via WebSocket| K
+    K -->|13. Loop back| B
+    B -->|14. WebSocket Connection?| L{WebSocket Connection?}
     L -->|Yes| M[Accept WebSocket Connections]
-    M --> N[Handle WebSocket Events]
-    N --> J
+    M -->|15. Accept WebSocket Connections| N[Handle WebSocket Events]
+    N -->|16. Handle WebSocket Events| J
     L -->|No| J
-    J --> B
-    K -->|Loop| K
+    J -->|17. Loop back| B
     style A fill:#FFD700, stroke:#000, stroke-width:2px
     style B fill:#87CEEB, stroke:#000, stroke-width:2px
     style C fill:#FFA500, stroke:#000, stroke-width:2px
@@ -48,7 +50,6 @@ graph TD
     style M fill:#90EE90, stroke:#000, stroke-width:2px
     style N fill:#90EE90, stroke:#000, stroke-width:2px
 ```
-
 
 
 # App 1 - Bluetooth Audio Streamer
