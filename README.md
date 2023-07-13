@@ -11,7 +11,44 @@ sequenceDiagram
     Web2->>Web2: User interacts and updates UI
     Web2->>App2: Send user input and UI updates via WebSocket
     App2->>App1: Send updates via WebSocket
+    App1->>iPhone: Send updates via Bluetooth
 ```
+
+```mermaid
+graph TD
+    A[Initialize] --> B[Discover and Connect]
+    B --> C[Handle Bluetooth Events]
+    C --> D[Establish Bluetooth Connection]
+    D --> E[Capture Audio Data]
+    E --> F[Encode Audio Data]
+    F --> G[Send Audio Data via Bluetooth]
+    G --> H[Receive Audio Data]
+    H --> I[Decode Audio Data]
+    I --> J[Convert Audio Data for WebSocket]
+    J --> K[Send Audio Data via WebSocket]
+    C --> L{WebSocket Connection?}
+    L -->|Yes| M[Accept WebSocket Connections]
+    M --> N[Handle WebSocket Events]
+    N --> J
+    L -->|No| J
+    J --> B
+    K -->|Loop| K
+    style A fill:#FFD700, stroke:#000, stroke-width:2px
+    style B fill:#87CEEB, stroke:#000, stroke-width:2px
+    style C fill:#FFA500, stroke:#000, stroke-width:2px
+    style D fill:#90EE90, stroke:#000, stroke-width:2px
+    style E fill:#90EE90, stroke:#000, stroke-width:2px
+    style F fill:#90EE90, stroke:#000, stroke-width:2px
+    style G fill:#90EE90, stroke:#000, stroke-width:2px
+    style H fill:#90EE90, stroke:#000, stroke-width:2px
+    style I fill:#90EE90, stroke:#000, stroke-width:2px
+    style J fill:#90EE90, stroke:#000, stroke-width:2px
+    style K fill:#90EE90, stroke:#000, stroke-width:2px
+    style L fill:#FFA500, stroke:#000, stroke-width:2px
+    style M fill:#90EE90, stroke:#000, stroke-width:2px
+    style N fill:#90EE90, stroke:#000, stroke-width:2px
+```
+
 
 
 # App 1 - Bluetooth Audio Streamer
@@ -45,41 +82,6 @@ In this updated scope:
 No separate web UI client needed since App 2 includes both backend websocket server and frontend visualization code.
 
 Let me know if you need me to clarify or expand on any part of this outline! I'm happy to explain further or provide code examples.
-
-
-```mermaid
-graph TD
-    A[Initialize Bluejay] --> B[Discover and Connect]
-    B --> C[Handle Bluetooth Events]
-    C --> D[Establish Bluetooth Connection]
-    D --> E[Capture Audio Data]
-    E --> F[Encode Audio Data]
-    F --> G[Send Audio Data via Bluetooth]
-    G --> H[Receive Audio Data]
-    H --> I[Decode Audio Data]
-    I --> J[Convert Audio Data for WebSocket]
-    J --> K[Send Audio Data via WebSocket]
-    C --> L{WebSocket Connection?}
-    L -->|Yes| M[Accept WebSocket Connections]
-    M --> N[Handle WebSocket Events]
-    N --> J
-    L -->|No| J
-    style A fill:#FFD700, stroke:#000, stroke-width:2px
-    style B fill:#87CEEB, stroke:#000, stroke-width:2px
-    style C fill:#FFA500, stroke:#000, stroke-width:2px
-    style D fill:#90EE90, stroke:#000, stroke-width:2px
-    style E fill:#90EE90, stroke:#000, stroke-width:2px
-    style F fill:#90EE90, stroke:#000, stroke-width:2px
-    style G fill:#90EE90, stroke:#000, stroke-width:2px
-    style H fill:#90EE90, stroke:#000, stroke-width:2px
-    style I fill:#90EE90, stroke:#000, stroke-width:2px
-    style J fill:#90EE90, stroke:#000, stroke-width:2px
-    style K fill:#90EE90, stroke:#000, stroke-width:2px
-    style L fill:#FFA500, stroke:#000, stroke-width:2px
-    style M fill:#90EE90, stroke:#000, stroke-width:2px
-    style N fill:#90EE90, stroke:#000, stroke-width:2px
-```
-
 
 
 
